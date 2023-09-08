@@ -1,3 +1,11 @@
+'''
+This file is used to collect Arduino data coming into the Serial port and save it it a csv file.
+
+For a given predetermined time (in Arduino_code folder) it collects 1200 points and saves it to a csv file. 
+
+This data is used to train and test the RFMN
+'''
+
 import serial
 
 
