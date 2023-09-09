@@ -175,7 +175,7 @@ class ReflexFuzzyNeuroNetwork(object):
         correct = 0
         for i in range(len(labels)):
             if labels[i] == results[i]: correct += 1
-        print("Accuracy: "+str(correct/len(labels) * 100)+"%")
+        # print("Accuracy: "+str(correct/len(labels) * 100)+"%")
         # return str(correct/len(labels) * 100)
         return results
 
