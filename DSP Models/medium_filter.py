@@ -45,8 +45,9 @@ def simulate_data_input():
     filtered_data1 = []
 
 
-    for _ in range(2000):
+    for _ in range(20):
         data_point = np.random.randint(0, 159875258)  # Simulated data
+        print(data_point)
         filtered_point = median_filter(data_point)
         filtered_point1 = iir_filter(data_point)
 
@@ -57,7 +58,7 @@ def simulate_data_input():
 
 
         print(f"Original Data: {data_point}, Filtered Data: {filtered_point}")
-        print(f"Original Data: {data_point}, Filtered Data: {filtered_point1}")
+        print(f"Original Data: {data_point}, Filtered Data1: {filtered_point1}")
 
 
     return original_data, filtered_data, filtered_data1
