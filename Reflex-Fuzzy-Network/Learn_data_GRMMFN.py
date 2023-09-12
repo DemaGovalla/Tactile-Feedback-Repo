@@ -51,6 +51,9 @@ X_train, X_test = X_train.T, X_test.T # Transpose the X_train and X_test data.
 # # # --- Declare network --- "
 nn = ReflexFuzzyNeuroNetwork(gamma=1, theta=.1)
 
+'''
+This is simply for results.
+'''
 # --- Train network --- #
 nn.train(X_train, y_train)
 
@@ -74,6 +77,9 @@ from matplotlib.animation import FuncAnimation
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+
+import asyncio
+import bleak
 
 
 label = []
