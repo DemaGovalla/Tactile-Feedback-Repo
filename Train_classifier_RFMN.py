@@ -57,9 +57,13 @@ combined_array_X = np.vstack((sepal_length_data, sepal_width_data, petal_length_
 
 print("this is combined array \n", combined_array_X)
 
-scaler_min_max = MinMaxScaler(feature_range=(0.001, .99))
-X_norm = scaler_min_max.fit_transform(combined_array_X)
+X_norm = (combined_array_X-combined_array_X.min())/(combined_array_X.max()-combined_array_X.min())
 print("this is X_norm \n", X_norm)
+
+
+# scaler_min_max = MinMaxScaler(feature_range=(0.001, .99))
+# X_norm = scaler_min_max.fit_transform(combined_array_X)
+# print("this is X_norm \n", X_norm)
 
 # My created norm
 # X_norm = (X-X.min())/(X.max()-X.min())
@@ -97,7 +101,7 @@ label = []
 x_label = []
 pred_x = 0
 def animate(i):
-        ful = []
+        ful = np.array([])
         global pred_x
         # data = pd.read_csv('C:\\Users\\dema2\\OneDrive\\Desktop\\PhD\\RFMN\\Reflex-Fuzzy-Network\\Arduino_live.csv')
         # data = pd.read_csv('C:\\Users\\dema2\\OneDrive\\Desktop\\PhD\\Tactile-Feedback-Repo\\Run_live_data.csv')
@@ -110,10 +114,10 @@ def animate(i):
         y3 = data['petal-length']
         y4 = data['petal-width']
 
-        print("This is y1 \n", y1)
-        print("This is y2 \n", y2)
-        print("This is y3 \n", y3)
-        print("This is y4 \n", y4)
+        # print("This is y1 \n", y1)
+        # print("This is y2 \n", y2)
+        # print("This is y3 \n", y3)
+        # print("This is y4 \n", y4)
 
 
 
@@ -122,24 +126,38 @@ def animate(i):
         len3 = y3.size
         len4 = y3.size
 
+        new_data = np.array([y1[len1-1], y2[len2-1], y3[len3-1], y4[len4-1]])
+        ful = np.append(ful, new_data)
 
-        ful.append(y1[len1-1])
-        ful.append(y2[len2-1])
-        ful.append(y3[len3-1])
-        ful.append(y4[len4-1])
 
-        print("This is y1[len1-1] \n", y1[len1-1])
-        print("This is y2[len2-1] \n", y2[len2-1])
-        print("This is y3[len3-1] \n", y3[len3-1])
-        print("This is y4[len4-1] \n", y4[len4-1])
+        # ful.append(y1[len1-1])
+        # ful.append(y2[len2-1])
+        # ful.append(y3[len3-1])
+        # ful.append(y4[len4-1])
 
-        print("This is ful \n", ful)
+        ful1 = ful.reshape(1, 4)
+
+        print("this is ful1 \n", ful1)
+
+
+        ful2 = (ful-combined_array_X.min())/(combined_array_X.max()-combined_array_X.min())
+
+        ful2 = ful2.ravel()
+
+        print("this is ful2 \n", ful2)
+
+        # print("This is y1[len1-1] \n", y1[len1-1])
+        # print("This is y2[len2-1] \n", y2[len2-1])
+        # print("This is y3[len3-1] \n", y3[len3-1])
+        # print("This is y4[len4-1] \n", y4[len4-1])
+
+        # print("This is ful \n", ful)
 
 
         # norm_ful = (ful-X.min())/(X.max()-X.min())
         # norm_ful = norm_ful.values
 
-        norm_ful = (ful-X_norm.min())/(X_norm.max()-X_norm.min())
+        # norm_ful = (ful-X_norm.min())/(X_norm.max()-X_norm.min())
         # print(norm_ful)
         # norm_ful = norm_ful.values
 
@@ -153,8 +171,8 @@ def animate(i):
 
 #         print(prediction)
 
-        prediction = nn.predict(norm_ful)
-        # print("Here", prediction)
+        prediction = nn.predict(ful)
+        print("Here", prediction)
 
         label.append(prediction)
         x_label.append(pred_x)
@@ -171,10 +189,7 @@ def animate(i):
         # plt.ylim(y[i]-5, y[i]+5)
         plt.legend(loc='upper left')
         plt.tight_layout()
-
         ax.clear()                                          # Clear last data frame
-        # ax.plot(dataList)                                   # Plot new data frame
-        
         ax.set_ylim([0, 4])                              # Set Y axis limit of plot
         ax.set_title("Arduino Data")                        # Set title of figure
         ax.set_ylabel("Value")    
@@ -182,7 +197,6 @@ def animate(i):
 
 
 
-# dataList = []                                           # Create empty list variable for later use
                                                         
 fig = plt.figure()                                      # Create Matplotlib plots fig is the 'higher level' plot window
 ax = fig.add_subplot(111)                               # Add subplot to main fig window
