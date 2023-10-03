@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Generate 2000 random sensor data points
-sensor_data = np.random.uniform(0, 20, 20)
+sensor_data = np.random.uniform(0, 20, 1000)
 
 # Generate time values (assuming 2000 points in 1 unit of time)
-time_values = np.arange(20)/20  # Adjusted for 20 Hz sampling frequency
+time_values = np.arange(1000)/20  # Adjusted for 20 Hz sampling frequency
 
 # Generate time values (assuming 2000 points in 100 units of time, i.e., 20 Hz)
 # time_values = np.linspace(0, 100, 2000)  # Adjusted for 20 Hz sampling frequency
