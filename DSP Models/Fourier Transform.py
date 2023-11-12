@@ -55,7 +55,6 @@ fourier = fft(signal)
 # Calculate N/2 to normalize the FFT output
 N = len(signal)
 normalize = N/2
-
 # Plot the result (the spectrum |Xk|)
 plt.subplot(6, 1, 2)
 # Plot the normalized FFT (|Xk|)/(N/2)
