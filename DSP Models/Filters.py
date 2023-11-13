@@ -92,14 +92,17 @@ plt.ylabel('Sensor Value')
 plt.title('Filtered Sensor Data')
 plt.legend()
 
+
 # Second plot (FFT of Sensor Data)
 plt.subplot(2, 1, 2)
 fft_values = np.fft.fft(sensor_data)
 freq = np.fft.fftfreq(len(sensor_data))
-plt.plot(freq, np.abs(fft_values))
+plt.plot(freq, np.abs(fft_values), label = "test")
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Magnitude')
 plt.title('FFT of Sensor Data')
+plt.legend()
+
 
 plt.tight_layout()
 plt.show()

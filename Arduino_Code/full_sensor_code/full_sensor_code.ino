@@ -1,17 +1,25 @@
+/*
+ * Module: full_sensor_code.ino
+ * Author: Dema N. Govalla
+ * Date: November 12, 2023
+ * Description: The file is used to collect Force and Magnetometer data coming from the Arduino. 
+                Printing the data on the serial monitor for data processing. 
+ */
+
 #include <Wire.h> // Include the Wire library for I2C communication
 
 #define MAGNETOMETER_ADDRESS 0x0D // Define the address of the Magnetomer
 #define Force_sensor A0 // Define the analog pin on the Arduino Uno to communicate with
 
-int Class = 1; // What Label/Class is in training. 
+int Class = 4; // What Label/Class is in training. 
 long data[7]; // Number of bit being read (should be a total of 8 bit)
 byte i;
 bool label = true;  
 float Time = 0.000, Force;
 
 // Define the labels being printed as headers
-String dataLabel1 = "Time";
-String dataLabel2 = "data[0]";
+String dataLabel1 = "Data[0]";
+String dataLabel2 = "Time";
 String dataLabel3 = "Force";
 String dataLabel4 = "X_axis";
 String dataLabel5 = "Y_axis";
@@ -94,9 +102,9 @@ void loop() {
 
   Force = abs(1023-analogRead(Force_sensor));
 
-  Serial.print(Time,4);
-  Serial.print(",");
   Serial.print(data[0]);
+  Serial.print(",");
+  Serial.print(Time,4);
   Serial.print(",");
   Serial.print(Force);
   Serial.print(",");

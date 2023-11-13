@@ -16,7 +16,7 @@ import time
 arduino_port = "COM5"
 fileName = "arduino_to_csv.csv"
 baud = 115200
-samples = 41   
+samples = 4001   
 line = 0
 ser = serial.Serial(arduino_port, baud)
 file = open(fileName, "w")
@@ -26,13 +26,13 @@ try:
     # Skip lines in serial port until headers are found
     while True:
         getData = ser.readline().decode('utf-8')
-        if "Time,data[0],Force,X_axis,Y_axis,Z_axis,Class" in getData:
+        if "Data[0],Time,Force,X_axis,Y_axis,Z_axis,Class" in getData:
             break
 
     # collect the samples
     while line <= samples:
         if line == 0:
-            data = "Time,Data[0],Force,X_axis,Y_axis,Z_axis,Class"
+            data = "Data[0],Time,Force,X_axis,Y_axis,Z_axis,Class"
             start_time = time.time()
         else:
             # Get the start time               
