@@ -19,7 +19,7 @@ from sklearn.utils.multiclass import unique_labels
 from RFMN import ReflexFuzzyNeuroNetwork
 
 
-sensorData = pd.read_csv('features_train_test.csv')
+sensorData = pd.read_csv('features_train_test_copy.csv')
 sensorData = sensorData.iloc[:,1:]
 numClasses = 4 # Change as needed
 
