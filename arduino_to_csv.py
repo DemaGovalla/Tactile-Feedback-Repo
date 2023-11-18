@@ -1,5 +1,5 @@
 """
-Module: arduino_to_csv
+Module: arduino_to_csv.py
 Author: Dema N. Govalla
 Date: November 12, 2023
 Description: The file collects Arduino data from the serial port and saves it in a CSV file.
