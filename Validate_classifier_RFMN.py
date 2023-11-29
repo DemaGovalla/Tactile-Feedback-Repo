@@ -11,7 +11,7 @@ from RFMN import ReflexFuzzyNeuroNetwork
 
 from RFMN import ReflexFuzzyNeuroNetwork
 
-
+# np.set_printoptions(threshold=np.inf)
 
 
 sensorData = pd.read_csv('features_train_test.csv')
@@ -142,6 +142,10 @@ print(new_sensorData)
 # print(new_sensorData.head())
 new_sensorData.to_csv('validated_combined_sensorData.csv', index=False)
 
+
+
+
+
 '''
 Data split for Iris.csv
 '''
@@ -167,12 +171,29 @@ X_train, X_test = X_train.T, X_test.T # Transpose the X_train and X_test data.
                                 # Essentailly we go from four 66X1 matrices to four 1x66 matrices. 
 # print(" This is X_train.T \n", X_train, "\n" )
 
+print(" This is X_train \n", X_train, "\n" )
+
 y_train, y_test = y_train.T, y_test.T
 
 nn = ReflexFuzzyNeuroNetwork(gamma=5, theta=.3)
 
 nn.train(X_train, y_train)
 print("Model is trained")
+
+
+# x = [[0.55237677, 0.55286652, 0.6921948,  0.54625513, 0.63743252, 0.69031135,
+#   0.65722617], [0.27229876, 0.27069298, 0.9067653, 0.001, 0.28375245, 0.28631156,
+#   0.90869578], [0.26324484, 0.31657343, 0.92080726, 0.001, 0.27157576,0.33297707,
+#   0.91466077], [0.26381811, 0.27228946,0.85288628,0.08075806, 0.27927118,0.28658606,
+#   0.84964041]]
+
+
+# for i in  x:
+
+#     ypredict = nn.predict(i)
+#     print('Value of precit is: ', ypredict, '\n')
+
+# print(ypredict)
 
 
 
@@ -249,10 +270,97 @@ X_train, X_test = X_train.T, X_test.T
 nn = ReflexFuzzyNeuroNetwork(gamma=1, theta=.1)
 nn.train(X_train, y_train)
 print("Model is trained")
-# --- Test Network --- #
-y_predlr = nn.test(X_test,y_test)
 
-print("done with testings")
+
+
+
+# --- Test Network --- #
+# y_predlr = nn.test(X_test,y_test)
+
+# print("done with testings")
+
+
+buffer_size = 50
+data_buffer = []
+
+def median_filter(data):
+    data_buffer.append(data)
+    if len(data_buffer) > buffer_size:
+        data_buffer.pop(0)  
+    median_value = np.median(data_buffer)
+    return median_value
+
+def simulate_data_input(X):
+    original_data = []
+    filtered_data = []
+    for element in np.nditer(X):
+        data_point = element  
+        filtered_point = median_filter(data_point)
+        original_data.append(data_point)
+        filtered_data.append(filtered_point)
+
+    return original_data, filtered_data
+
+# --- Import Iris data, split, and scale --- #
+# data = pd.read_csv('C:\\Users\\dema2\\OneDrive\\Desktop\\PhD\\RFMN\\Reflex-Fuzzy-Network\\Arduino_train_test_labels.csv')
+data = pd.read_csv('C:\\Users\\dema2\\OneDrive\\Desktop\\PhD\\Tactile-Feedback-Repo\\SaveModel\\Iris_feedback.csv')
+data = data.iloc[:,1:]
+X = data.iloc[:, :-1].values
+y = data.iloc[:, 4].values
+
+sepal_length = data.iloc[:, :-4].values
+sepal_width = data.iloc[:, 1:-3].values
+petal_length = data.iloc[:, 2:-2].values
+petal_width = data.iloc[:, 3:-1].values
+
+original_data, sepal_length_data = simulate_data_input(sepal_length)
+original_data, sepal_width_data = simulate_data_input(sepal_width)
+original_data, petal_length_data = simulate_data_input(petal_length)
+original_data, petal_width_data = simulate_data_input(petal_width)
+
+sepal_length_data = np.array(sepal_length_data)
+sepal_width_data = np.array(sepal_width_data)
+petal_length_data = np.array(petal_length_data)
+petal_width_data = np.array(petal_width_data)
+
+combined_array_X = np.vstack((sepal_length_data, sepal_width_data, petal_length_data, petal_width_data)).T
+
+print("this is combined array \n", combined_array_X)
+
+X_norm = (combined_array_X-combined_array_X.min())/(combined_array_X.max()-combined_array_X.min())
+print("this is X_norm \n", X_norm)
+
+
+# scaler_min_max = MinMaxScaler(feature_range=(0.001, .99))
+# X_norm = scaler_min_max.fit_transform(combined_array_X)
+# print("this is X_norm \n", X_norm)
+
+# My created norm
+# X_norm = (X-X.min())/(X.max()-X.min())
+# X_norm = X_norm.values
+# print(X_norm.shape)
+# print(X_norm)
+
+# print(X_norm.min())
+# print(X_norm.max())
+# print(type(X_norm.min()))
+# print(type(X_norm.max()))
+
+
+X_train, X_test, y_train, y_test = train_test_split(X_norm, y, test_size=0.33, random_state=42)                                     
+X_train, X_test = X_train.T, X_test.T 
+nn = ReflexFuzzyNeuroNetwork(gamma=1, theta=.1)
+nn.train(X_train, y_train)
+print("Model is trained")
+
+
+
+
+# --- Test Network --- #
+# y_predlr = nn.test(X_test,y_test)
+
+# print("done with testings")
+
 
 
 import random
@@ -276,15 +384,17 @@ def animate(i):
 
 
         # x = data['x_value']
-        y1 = data['sepal-length']
-        y2 = data['sepal-width']
-        y3 = data['petal-length']
-        y4 = data['petal-width']
+        y1 = data['Force']
+        y2 = data['X_axis']
+        y3 = data['Y_axis']
+        y4 = data['Z_axis']
 
-        # print("This is y1 \n", y1)
-        # print("This is y2 \n", y2)
-        # print("This is y3 \n", y3)
-        # print("This is y4 \n", y4)
+
+
+        print("This is y1 \n", y1)
+        print("This is y2 \n", y2)
+        print("This is y3 \n", y3)
+        print("This is y4 \n", y4)
 
 
 
