@@ -141,14 +141,21 @@ class ReflexFuzzyNeuroNetwork(object):
         # return str(correct/len(labels) * 100)
         return results
 
-    def predict(self, X):
-        X = np.reshape(X, (len(X), 1))
-        results = []
-        [results.append(self.query(X[:,i])) for i in range(len(X[1]))]
-        results = np.array(results).argmax(axis=1) + 1
-        for i in range(len(X[1])):
-            return results[i]
+    # def predict(self, X):
+    #     X = np.reshape(X, (len(X), 1))
+    #     results = []
+    #     [results.append(self.query(X[:,i])) for i in range(len(X[1]))]
+    #     results = np.array(results).argmax(axis=1) + 1
+    #     for i in range(len(X[1])):
+    #         return results[i]
 
+    def predict(self, X):
+        results = []
+        for i in range(len(X)):
+            results.append(self.query(X[i]))  # Assuming query accepts a single sample
+        results = np.array(results).argmax(axis=1) + 1
+        return results[0]
+    
     # --- Activation functions for Hyperboxes --- #
     def ThresholdFunction(self,x):
         if x >= 0: return 1
