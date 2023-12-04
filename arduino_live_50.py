@@ -1,3 +1,11 @@
+"""
+Module: arduino_live_50.py
+Author: Dema N. Govalla
+Date: December 4, 2023
+Description: The file opens arduino_live.csv and collects the most recent (last most) 50 lines
+            and saves them into an arduino_live_50.csv file for real-time analysis. 
+"""
+
 import time
 import csv
 

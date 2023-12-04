@@ -1,37 +1,23 @@
-# Starts here
-import numpy as np, pandas as pd, random, math, sys, csv
-import matplotlib.pyplot as plt
+"""
+Module: validate_classifier_TSC_LS.py
+Author: Dema N. Govalla
+Date: December 4, 2023
+Description: The file trains the TSC-LS algorithm using the combined_sensorData.csv data. 
+            It then reads the data coming from the arduino_live_50.csv file to predict the correct 
+            class/label for each real time data point. 
+"""
+
+import numpy as np, pandas as pd, random, csv, matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from tslearn.clustering import TimeSeriesKMeans
+from matplotlib.animation import FuncAnimation
 from torch import nn, optim
 from TSC_LS import LearningShapelets
-from sklearn.model_selection import train_test_split
 
-
-from sklearn.preprocessing import MinMaxScaler
-import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, fbeta_score, matthews_corrcoef
-from sklearn.utils.multiclass import unique_labels
-
-
-
-'''
-Train the data
-'''
 series = pd.read_csv('combined_sensorData.csv')
-
-
 columns_to_combine = series.columns[:-1]
-print(columns_to_combine)
-print(columns_to_combine.size)
-
 combined_array = []
-
-
-columns_to_combine = series.columns[:-1]
-
-combined_array = []
-
 
 # Loop through each column, extract values, and append to combined_array
 for column in columns_to_combine:
@@ -44,29 +30,13 @@ y = series.iloc[:,-1].to_numpy()
 
 label_map = {1: 0, 2: 1, 3: 2, 4: 3}
 y = np.array([label_map[label] for label in y])
-
-# np.set_printoptions(threshold=np.inf)
-print(combined_array)
-print(type(combined_array))
-print(combined_array.shape)
-
 y = y[~np.isnan(y)]
 
-# print("old X", combined_array, '\n'*300)
-
-
-X = combined_array
-
 scaler = StandardScaler()
-X= scaler.fit_transform(X)
-# print(X)
+X= scaler.fit_transform(combined_array)
 
 X = X.reshape(y.size,columns_to_combine.size,1)
-
-
-
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
-
 
 
 def sample_ts_segments(X, shapelets_size, n_segments=10000):
@@ -91,8 +61,6 @@ def get_weights_via_kmeans(X, shapelets_size, num_shapelets, n_segments=10000):
     clusters = k_means.cluster_centers_.transpose(0, 2, 1)
     return clusters
 
-
-
 n_ts, n_channels, len_ts = X_train.shape
 loss_func = nn.CrossEntropyLoss()
 num_classes = len(set(y_train))
@@ -103,7 +71,6 @@ lr = 1e-2
 wd = 1e-3
 epsilon = 1e-7
 
-
 learning_shapelets = LearningShapelets(shapelets_size_and_len=shapelets_size_and_len,
                                        in_channels=n_channels,
                                        num_classes=num_classes,
@@ -112,84 +79,30 @@ learning_shapelets = LearningShapelets(shapelets_size_and_len=shapelets_size_and
                                        verbose=1,
                                        dist_measure=dist_measure)
 
-
 for i, (shapelets_size, num_shapelets) in enumerate(shapelets_size_and_len.items()):
     weights_block = get_weights_via_kmeans(X_train, shapelets_size, num_shapelets)
     learning_shapelets.set_shapelet_weights_of_block(i, weights_block)
 
-
 optimizer = optim.Adam(learning_shapelets.model.parameters(), lr=lr, weight_decay=wd, eps=epsilon)
 learning_shapelets.set_optimizer(optimizer)
 
-
 losses = learning_shapelets.fit(X_train, y_train, epochs=2000, batch_size=256, shuffle=False, drop_last=False)
-
-
-
-
-def eval_accuracy(model, X, Y):
-    result = []
-    predictions = model.predict(X)
-    if len(predictions.shape) == 2:
-        predictions = predictions.argmax(axis=1)
-        print(predictions)
-    print(type(predictions))
-    print(predictions.shape)
-
-    result.append(predictions)
-    print(f"Accuracy: {(predictions == Y).sum() / Y.size}")
-    return result
-
-
-
-y_predlr = np.array(eval_accuracy(learning_shapelets, X_test, y_test)).reshape(-1)
-
-
-
-
-# check results
-print("confusion_matrix \n", confusion_matrix(y_test, y_predlr), "\n")
-print("classification_report \n", classification_report(y_test, y_predlr), "\n")
-
-
-print("Model is trained")
-
-
-
-
-
-import random
-import numpy as np
-import pandas as pd
-import time
-from matplotlib.animation import FuncAnimation
-import matplotlib.pyplot as plt
-from statistics import median
 
 output_file = 'output_file.csv'
 
 def average_filter(column_values):
-    # if len(column_values) <= 60:
-    #     raise ValueError("Input column should contain 50 values")
     average_value = np.mean(column_values)
     return average_value
 
 def median_filter(column_values):
-    # if len(column_values) <= 60:
-    #     raise ValueError("Input column should contain 50 values")
-    
-    # Calculate the median of the values in the column
     median_value = np.median(column_values)
     return median_value
 
 label = []
 x_label = []
 pred_x = 0
-
 def animate(i):
-
         global pred_x 
-
         with open(output_file, 'r') as file:
             csv_reader = csv.reader(file)
             rows = list(csv_reader)
@@ -208,7 +121,6 @@ def animate(i):
             filtered_median_third_column = median_filter(third_column)
             filtered_median_fourth_column = median_filter(fourth_column)
             filtered_median_fifth_column = median_filter(fifth_column)
-
 
         combined_filtered_values = np.array([
             filtered_average_second_column,
@@ -248,56 +160,10 @@ def animate(i):
         plt.ylabel("Value")   
         plt.xlabel("Time")    
         plt.title("Deformation Data")
-
         plt.xlim(lower_limit, len(data_x)) # Adjust x-axis limits dynamically
-        # plt.ylim(-1, 4) # Adjust y-axis limits for better visualization
         plt.ylim(data_y.min() - 0.5, data_y.max() + 0.5)
-
-        # ax.set_ylim([-1, 4])                              # Set Y axis limit of plot
-        # plt.legend(loc='upper left')
-
+        plt.legend(loc='upper left')
         plt.tight_layout()
-                                          
 fig, ax = plt.subplots()
-
-
-# Start the animation
 ani = FuncAnimation(fig, animate, interval=50)  # Update interval in milliseconds (1 second in this case)
-
-# Show the plot
 plt.show()
-
-
-
-
-
-# ful = np.array([])
-# global pred_x
-# x = data['x_value']
-# y1 = data['Force']
-# y2 = data['X_axis']
-# y3 = data['Y_axis']
-# y4 = data['Z_axis']
-# len1 = y1.size
-# len2 = y2.size
-# len3 = y3.size
-# len4 = y3.size
-# new_data = np.array([y1[len1-1], y2[len2-1], y3[len3-1], y4[len4-1]])
-# ful = np.append(ful, new_data)
-# ful.append(y1[len1-1])
-# ful.append(y2[len2-1])
-# ful.append(y3[len3-1])
-# ful.append(y4[len4-1])
-# ful1 = ful.reshape(1, 4)
-# ful2 = (ful-combined_array_X.min())/(combined_array_X.max()-combined_array_X.min())
-# ful2 = ful2.ravel()
-
-# norm_ful = (ful-X.min())/(X.max()-X.min())
-# norm_ful = norm_ful.values
-# norm_ful = (ful-X_norm.min())/(X_norm.max()-X_norm.min())
-# norm_ful = norm_ful.values
-# prediction = nn.predict(norm_df)
-
-# prediction = nn.predict(ful)
-# print("Here", prediction)
-

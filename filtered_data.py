@@ -1,5 +1,5 @@
 """
-Module: filter_train_test.py
+Module: filtered_data.py
 Author: Dema N. Govalla
 Date: November 12, 2023
 Description: The file uses the data from features_train_test.csv to plot the different 
