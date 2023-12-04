@@ -2,7 +2,7 @@
  * Module: full_sensor_code.ino
  * Author: Dema N. Govalla
  * Date: November 12, 2023
- * Description: The file is used to collect Force and Magnetometer data coming from the Arduino. 
+ * Description: The file is used to collect Force, Magnetometer, Accelerometer and Gyroscope data coming from the Arduino. 
                 Printing the data on the serial monitor for data processing. 
  */
 
@@ -41,13 +41,11 @@ void setup() {
   Serial.begin(115200); // Initialize serial communication for debugging
 
   while (!Serial);
-  
     if (!IMU.begin()) {
-      Serial.println("Failed to initialize IMU!");
+      Serial.println("Failed to initialize IMU!"); // Identify the IMU is connected to the arduino. 
       while (1);
     }
 
-    
   pinMode(Force_sensor, INPUT); // Initilize the force sensor as an input
   
   Wire.beginTransmission(MAGNETOMETER_ADDRESS);
@@ -78,7 +76,6 @@ void setup() {
 
 void loop() {
   while(label){ 
-    
     //print headers
     Serial.print(dataLabel1);
     Serial.print(",");
@@ -115,8 +112,6 @@ void loop() {
   for (i = 0; i < 7; i++) {
     data[i] = Wire.read(); // Read 2 bytes of data
   }
-
-  
 
   int xMagneticField = ((data[2] << 8) | data[1]);
   int yMagneticField = ((data[4] << 8) | data[3]);
@@ -160,8 +155,7 @@ void loop() {
   Serial.print(",");
   Serial.println(zGyroscope, 4);
 
+  Time += 0.02; // Increment the time by 50 Hz
 
-  Time += 0.02;
-
-  delay(20);
+  delay(20); // delay by 20 miliseconds - collecting data by 50Hz sampling frequency
 }

@@ -3,7 +3,7 @@ import os
 
 arduino_port = "COM5"
 baud = 115200
-fileName = "Arduino_live.csv"
+fileName = "arduino_live.csv"
 samples = 10
 print_labels = False
 trigger_line = "Data[0],Time,Force,X_axis,Y_axis,Z_axis"  # Define the trigger line

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from tslearn.clustering import TimeSeriesKMeans
 from torch import nn, optim
-from learning_shapelets import LearningShapelets
+from TSC_LS import LearningShapelets
 from sklearn.model_selection import train_test_split
 
 
@@ -221,34 +221,17 @@ def animate(i):
             filtered_median_fifth_column
         ])
 
-        # print(combined_filtered_values)
-
         combined_filtered_values = combined_filtered_values.reshape(1, -1)
         
-        # print(combined_filtered_values)
-
-
         X_test_scaled = scaler.transform(combined_filtered_values)
-
-        # Reshape the 1D array into a 2D array with 8 rows and 1 column
         X_test_scaled = X_test_scaled.reshape(1, combined_filtered_values.size, 1)
 
         prediction = learning_shapelets.predict(X_test_scaled) 
-
-
-        print(prediction)
 
         prediction = prediction.ravel()
         prediction = prediction[0]
         print(prediction)
 
-
-        # prediction = int(prediction[0][1])
-
-    
-        # print(prediction)
-
-        
         label.append(prediction)
         x_label.append(pred_x)
       
