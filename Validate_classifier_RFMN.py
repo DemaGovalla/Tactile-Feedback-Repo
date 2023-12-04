@@ -10,16 +10,6 @@ from RFMN import ReflexFuzzyNeuroNetwork
 from RFMN import ReflexFuzzyNeuroNetwork
 
 
-# sensorData = pd.read_csv('output_file.csv')
-
-# sensorData = sensorData.iloc[:,1:]
-
-# print(sensorData.head(51))
-
-
-'''
-Data split for Iris.csv
-'''
 sensor_data = pd.read_csv('combined_sensorData.csv')
 sensor_data = sensor_data.iloc[:,0:]
 
@@ -55,18 +45,19 @@ from statistics import median
 output_file = 'output_file.csv'
 
 def average_filter(column_values):
-    if len(column_values) != 50:
+    if len(column_values) <= 60:
         raise ValueError("Input column should contain 50 values")
     average_value = np.mean(column_values)
     return average_value
 
 def median_filter(column_values):
-    if len(column_values) != 50:
+    if len(column_values) <= 60:
         raise ValueError("Input column should contain 50 values")
     
     # Calculate the median of the values in the column
     median_value = np.median(column_values)
     return median_value
+
 
 label = []
 x_label = []

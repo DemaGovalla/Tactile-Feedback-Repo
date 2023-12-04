@@ -7,6 +7,7 @@
  */
 
 #include <Wire.h> // Include the Wire library for I2C communication
+#include <Arduino_LSM6DSOX.h>
 
 #define MAGNETOMETER_ADDRESS 0x0D // Define the address of the Magnetomer
 #define Force_sensor A0 // Define the analog pin on the Arduino Uno to communicate with
@@ -21,10 +22,15 @@ float Time = 0.000, Force;
 String dataLabel1 = "Data[0]";
 String dataLabel2 = "Time";
 String dataLabel3 = "Force";
-String dataLabel4 = "X_axis";
-String dataLabel5 = "Y_axis";
-String dataLabel6 = "Z_axis";
-String dataLabel7 = "Class";
+String dataLabel4 = "X_axis_mag";
+String dataLabel5 = "Y_axis_mag";
+String dataLabel6 = "Z_axis_mag";
+String dataLabel7 = "X_axis_acel";
+String dataLabel8 = "Y_axis_acel";
+String dataLabel9 = "Z_axis_acel";
+String dataLabel10 = "X_axis_gyro";
+String dataLabel11 = "Y_axis_gyro";
+String dataLabel12 = "Z_axis_gyro";
 
 float xySensitivity = 1.5;  // Sensitivity for a typical 50mT range is 1.5. Same for the z-axis. Page 13
 float zSensitivity = 1.5;
@@ -34,6 +40,14 @@ void setup() {
   Wire.setClock(100000); // Initialize the I2C bus
   Serial.begin(115200); // Initialize serial communication for debugging
 
+  while (!Serial);
+  
+    if (!IMU.begin()) {
+      Serial.println("Failed to initialize IMU!");
+      while (1);
+    }
+
+    
   pinMode(Force_sensor, INPUT); // Initilize the force sensor as an input
   
   Wire.beginTransmission(MAGNETOMETER_ADDRESS);
@@ -78,8 +92,18 @@ void loop() {
     Serial.print(",");
     Serial.print(dataLabel6);
     Serial.print(",");
-    Serial.println(dataLabel7); 
-    
+    Serial.print(dataLabel7); 
+    Serial.print(",");
+    Serial.print(dataLabel8);
+    Serial.print(",");
+    Serial.print(dataLabel9);
+    Serial.print(",");
+    Serial.print(dataLabel10);
+    Serial.print(",");
+    Serial.print(dataLabel11);
+    Serial.print(",");
+    Serial.println(dataLabel12);
+
     label = false;
   }
   
@@ -92,6 +116,8 @@ void loop() {
     data[i] = Wire.read(); // Read 2 bytes of data
   }
 
+  
+
   int xMagneticField = ((data[2] << 8) | data[1]);
   int yMagneticField = ((data[4] << 8) | data[3]);
   int zMagneticField = ((data[6] << 8) | data[5]);
@@ -99,6 +125,14 @@ void loop() {
   float xMicroTesla = xMagneticField * xySensitivity;
   float yMicroTesla = yMagneticField * xySensitivity;
   float zMicroTesla = zMagneticField * zSensitivity;
+
+  float xAccelerometer, yAccelerometer, zAccelerometer;
+  float xGyroscope, yGyroscope, zGyroscope;
+
+  if (IMU.gyroscopeAvailable() && IMU.accelerationAvailable() ) {
+      IMU.readAcceleration(xAccelerometer, yAccelerometer, zAccelerometer);
+      IMU.readGyroscope(xGyroscope, yGyroscope, zGyroscope);
+    }
 
   Force = abs(1023-analogRead(Force_sensor));
 
@@ -114,7 +148,18 @@ void loop() {
   Serial.print(",");
   Serial.print(zMicroTesla, 4);
   Serial.print(",");
-  Serial.println(Class); 
+  Serial.print(xAccelerometer, 4);
+  Serial.print(",");
+  Serial.print(yAccelerometer, 4);
+  Serial.print(",");
+  Serial.print(zAccelerometer, 4);
+  Serial.print(",");
+  Serial.print(xGyroscope, 4);
+  Serial.print(",");
+  Serial.print(yGyroscope, 4);
+  Serial.print(",");
+  Serial.println(zGyroscope, 4);
+
 
   Time += 0.02;
 

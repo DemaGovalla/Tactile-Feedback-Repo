@@ -917,6 +917,7 @@ class LearningShapelets:
 
         # set model in eval mode
         self.model.eval()
+        print("I was here!!!!!!")
 
         """Evaluate the given data loader on the model and return predictions"""
         result = None
@@ -927,6 +928,37 @@ class LearningShapelets:
                 result = y_hat if result is None else np.concatenate((result, y_hat), axis=0)
         return result
 
+    # def predict(self, X, batch_size=256):
+    #     """
+    #     Use the model for inference and return class predictions.
+    #     @param X: the time series data
+    #     @type X: tensor(float) of shape (n_samples, in_channels, len_ts)
+    #     @param batch_size: the batch to predict with
+    #     @type batch_size: int
+    #     @return: the class predictions of the model
+    #     @rtype: array(int) of shape (num_samples,)
+    #     """
+    #     X = tensor(X, dtype=torch.float32)
+    #     if self.to_cuda:
+    #         X = X.cuda()
+    #     ds = TensorDataset(X)
+    #     dl = DataLoader(ds, batch_size=batch_size, shuffle=False, drop_last=False)
+
+    #     # set model in eval mode
+    #     self.model.eval()
+
+    #     # Initialize an empty list to store class predictions
+    #     predictions = []
+
+    #     with torch.no_grad():
+    #         for x in dl:
+    #             y_logits = self.model(x[0])
+    #             y_probs = torch.softmax(y_logits, dim=1)
+    #             predicted_classes = torch.argmax(y_probs, dim=1).cpu().numpy()
+    #             predictions.extend(predicted_classes)
+
+    #     return np.array(predictions)
+    
     def get_shapelets(self):
         """
         Return a matrix of all shapelets. The shapelets are ordered (ascending) according to
