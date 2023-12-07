@@ -323,9 +323,9 @@ new_sensorData = pd.DataFrame({
 split = len(classOne_ave_filt_force)
 print(split)
 
-new_sensorData['Label'] = 0
-new_sensorData.loc[0:(1*split)-1, 'Label'] = 1
-new_sensorData.loc[(1*split):(2*split)-1, 'Label'] = 2
-new_sensorData.loc[(2*split):(3*split)-1, 'Label'] = 3
-new_sensorData.loc[(3*split):(4*split)-1, 'Label'] = 4
+new_sensorData['Class'] = 0
+new_sensorData.loc[0:(1*split)-1, 'Class'] = 1
+new_sensorData.loc[(1*split):(2*split)-1, 'Class'] = 2
+new_sensorData.loc[(2*split):(3*split)-1, 'Class'] = 3
+new_sensorData.loc[(3*split):(4*split)-1, 'Class'] = 4
 new_sensorData.to_csv('combined_sensorData.csv', index=False)
