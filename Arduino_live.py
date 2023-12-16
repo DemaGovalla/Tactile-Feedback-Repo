@@ -1,3 +1,12 @@
+"""
+Module: arduino_live.py
+Author: Dema N. Govalla
+Date: December 4, 2023
+Description: The file collect and prints out live data coming from the Arduino Uno in real-time. 
+            The file is used to simulate real-time data coming from the various sensors. 
+            The real time data is saved onto a file names called arduino_live.csv
+"""
+
 import serial
 import os
 
